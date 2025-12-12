@@ -14,10 +14,9 @@ dotenv.config();
 const app = express();
 
 connectDB();
-
 app.use(
   cors({
-    origin: "https://project-billing-time-tracking-syste-pi.vercel.app",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
