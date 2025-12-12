@@ -29,6 +29,7 @@ app.use(limiter);
 
 const port = process.env.PORT || 5000;
 
+app.get("/", (req, res) => res.send("Server is running"));
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/timelogs", timeLogRoutes);
