@@ -2,17 +2,18 @@ import TimeLog from "../models/timelog.model.js";
 import Project from "../models/project.model.js";
 export const createTimeLog = async (req, res) => {
   try {
-    const { project_id } = req.params;
+    const { projectId } = req.params;
+
     const { hours, notes, log_date } = req.body;
 
-    if (!project_id)
+    if (!projectId)
       return res.status(400).json({ message: "Project is required" });
     if (!hours || hours <= 0)
       return res.status(400).json({ message: "Hours must be positive" });
     if (!log_date)
       return res.status(400).json({ message: "Log date is required" });
 
-    const project = await Project.findById(project_id);
+    const project = await Project.findById(projectId);
     if (!project || project.archived) {
       return res.status(400).json({ message: "Invalid or archived project" });
     }
@@ -30,7 +31,7 @@ export const createTimeLog = async (req, res) => {
     }
 
     const timeLog = await TimeLog.create({
-      project_id,
+      project_id: projectId,
       user_id: req.user._id,
       hours,
       notes,
@@ -97,16 +98,14 @@ export const updateTimeLog = async (req, res) => {
 
 export const deleteTimeLog = async (req, res) => {
   try {
-    const { id } = req.params;
-    const timeLog = await TimeLog.findById(id);
+    const { logId } = req.params;
+    const timeLog = await TimeLog.findByIdAndDelete(logId);
     if (!timeLog)
       return res.status(404).json({ message: "Time log not found" });
 
     if (!req.user.role === "admin" && !timeLog.user_id.equals(req.user._id)) {
       return res.status(403).json({ message: "Access denied" });
     }
-
-    await timeLog.remove();
 
     res.json({ success: true, message: "Time log deleted" });
   } catch (error) {

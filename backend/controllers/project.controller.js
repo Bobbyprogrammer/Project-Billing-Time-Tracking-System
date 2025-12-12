@@ -33,18 +33,12 @@ export const createProject = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { projectId } = req.params;
 
-    const project = await Project.findById(id);
+    const project = await Project.findById(projectId);
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
-    }
-
-    if (project.status === "archived" || project.archived) {
-      return res
-        .status(400)
-        .json({ message: "Archived project cannot be updated" });
     }
 
     const { name, description, billing_rate, status } = req.body;
@@ -68,6 +62,8 @@ export const updateProject = async (req, res) => {
       project,
     });
   } catch (error) {
+    console.log(error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -76,7 +72,7 @@ export const getProjects = async (req, res) => {
   try {
     const projects = await Project.find().sort({ createdAt: -1 });
 
-    res.json({ projects });
+    res.json({ success: true, projects });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -84,15 +80,15 @@ export const getProjects = async (req, res) => {
 
 export const getProjectById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { projectId } = req.params;
 
-    const project = await Project.findById(id);
+    const project = await Project.findById(projectId);
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    res.json({ project });
+    res.json({ success: true, project });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
